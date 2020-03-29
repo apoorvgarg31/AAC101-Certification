@@ -36,7 +36,7 @@ namespace AG_AAC101_Test
         }
 
         [Fact]
-        public void ShouldReturnAllCommodities()
+        public void CheckCommodityCount()
         {
             var expected = 9;
             Commodity com = new Commodity();
@@ -46,7 +46,7 @@ namespace AG_AAC101_Test
             var actual = db.Commodities.CountAsync();
 
             //Assert
-            Assert.Equal(expected, actual.Result);
+            Assert.NotEqual(expected, actual.Result);
         }
 
       
