@@ -100,7 +100,7 @@ namespace AG_AAC101
 
         public static void DisplayAllCommodities()
         {
-            Console.WriteLine("Extracting Commodities information.......", Color.CornflowerBlue);
+            Console.WriteLine("Extracting Commodities information.......\n\n", Color.CornflowerBlue);
             using var db = new BlobDbContext();
             List<Commodity> CommodityCount = db.Commodities.ToList();
             int CommodityCount1 = db.Commodities.Count();
@@ -108,7 +108,7 @@ namespace AG_AAC101
             
             if (CommodityCount?.Count > 20)
             {
-                Console.WriteLine("Since commodities count is greater than 20 therefore do you want to send it over e-mail instead ? \nChoose\n 1: yes\n 2: No", Color.CornflowerBlue);
+                Console.WriteLine("Since commodities count is greater than 20 therefore do you want to send it over e-mail instead ? \n\nChoose : \n 1: yes\n 2: No", Color.CornflowerBlue);
                 String userinput = Console.ReadLine();
                 if (userinput == "1")
                 {
@@ -136,46 +136,59 @@ namespace AG_AAC101
 
             static void DisplayCommoditiesbyPage()
             {
-                using var db = new BlobDbContext();
-                
-                
-                int skip = 0;
-                Console.WriteLine("Please enter the number of records you want to display on one page : ", Color.Violet);
-                var take = Int32.Parse(Console.ReadLine());
-                
-                if (take == 0 )
+                try
                 {
-                    Console.WriteLine("Page length cannot be 0. Hit enter to return to main menu", Color.Red);
-                    Console.Read();
-                    MainApplication();
-                }
-                Console.WriteLine("Displaying all commodities as per input..", Color.Violet);
-                List<Commodity> CommodityInfo = db.Commodities.Skip(skip).Take(take).ToList();
-                while (CommodityInfo?.Count > 0)
-                {
-                    var table = new ConsoleTable("ID", "CommodityCode", "CommodityName", "Unit", "EstimatedQuantity", "ActualQuantity");
-                    foreach (var item in CommodityInfo)
-                    {
+                    using var db = new BlobDbContext();
 
-                        table.AddRow($"{item.ID}", $"{ item.CommodityCode}", $"{item.CommodityName}", $"{item.Unit}", $"{item.EstimatedQuantity}", $"{item.ActualQuantity}");
 
-                    }
-                    table.Write();
-                    Console.WriteLine("Press Enter to continue with the list of Commodities", Color.Yellow);
-                    Console.WriteLine("Type exit to return to Main Menu", Color.AntiqueWhite);
-                    String input = Console.ReadLine();
-                    String Linput = input.ToLower();
-                    if (Linput == "exit")
+                    int skip = 0;
+                    Console.WriteLine("Please enter the number of records you want to display on one page : ", Color.Violet);
+                    var take = Int32.Parse(Console.ReadLine());
+
+                    if (take == 0)
                     {
+                        Console.WriteLine("Page length cannot be 0. Hit enter to return to main menu", Color.Red);
+                        Console.Read();
                         MainApplication();
                     }
-
-                    else
+                    Console.WriteLine("Displaying all commodities as per input..", Color.Violet);
+                    List<Commodity> CommodityInfo = db.Commodities.Skip(skip).Take(take).ToList();
+                    while (CommodityInfo?.Count > 0)
                     {
-                        skip += CommodityInfo.Count;
-                        CommodityInfo = db.Commodities.Skip(skip).Take(take).ToList();
+                        var table = new ConsoleTable("ID", "CommodityCode", "CommodityName", "Unit", "EstimatedQuantity", "ActualQuantity");
+                        foreach (var item in CommodityInfo)
+                        {
+
+                            table.AddRow($"{item.ID}", $"{ item.CommodityCode}", $"{item.CommodityName}", $"{item.Unit}", $"{item.EstimatedQuantity}", $"{item.ActualQuantity}");
+
+                        }
+                        table.Write();
+                        Console.WriteLine("Press Enter to continue with the list of Commodities", Color.Yellow);
+                        Console.WriteLine("Type exit to return to Main Menu", Color.AntiqueWhite);
+                        String input = Console.ReadLine();
+                        String Linput = input.ToLower();
+                        if (Linput == "exit")
+                        {
+                            MainApplication();
+                        }
+
+                        else
+                        {
+                            skip += CommodityInfo.Count;
+                            CommodityInfo = db.Commodities.Skip(skip).Take(take).ToList();
+                        }
                     }
+
                 }
+                catch (Exception ex)
+                {
+
+                    Console.WriteLine("Page length cannot be blank. Hit enter to return to main menu.", Color.Red);
+                    Console.ReadLine();
+                    MainApplication();
+
+                }
+                
 
             }
 
@@ -363,6 +376,7 @@ namespace AG_AAC101
                         UpdateCommodity();
                         break;
                     case "5":
+                        Console.WriteLine("Lets' extract the commodities information before deleting. \n");
                         DeleteCommodity();
                         break;
                     case "6":
