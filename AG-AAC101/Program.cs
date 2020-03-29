@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Net.Mail;
 using System.Threading;
 using Console = Colorful.Console;
 
@@ -99,38 +100,83 @@ namespace AG_AAC101
 
         public static void DisplayAllCommodities()
         {
-            int skip = 0;
-            int take = 5;
-
+            Console.WriteLine("Extracting Commodities information.......", Color.CornflowerBlue);
             using var db = new BlobDbContext();
-            Console.WriteLine("Displaying all the existing commodities..", Color.Violet);
-
-            List<Commodity> CommodityInfo = db.Commodities.Skip(skip).Take(take).ToList();
-             
-            while (CommodityInfo?.Count > 0)
+            List<Commodity> CommodityCount = db.Commodities.ToList();
+            int CommodityCount1 = db.Commodities.Count();
+            Console.WriteLine("Total Number of Commodities found : {0}", CommodityCount1, Color.CornflowerBlue);
+            
+            if (CommodityCount?.Count > 20)
             {
-                var table = new ConsoleTable("ID", "CommodityCode", "CommodityName", "Unit", "EstimatedQuantity", "ActualQuantity");
-                foreach (var item in CommodityInfo)
+                Console.WriteLine("Since commodities count is greater than 20 therefore do you want to send it over e-mail instead ? \nChoose\n 1: yes\n 2: No", Color.CornflowerBlue);
+                String userinput = Console.ReadLine();
+                if (userinput == "1")
                 {
+                    var table = new ConsoleTable("ID", "CommodityCode", "CommodityName", "Unit", "EstimatedQuantity", "ActualQuantity");
+                    foreach (var item in CommodityCount)
+                    {
 
-                    table.AddRow($"{item.ID}", $"{ item.CommodityCode}", $"{item.CommodityName}", $"{item.Unit}", $"{item.EstimatedQuantity}", $"{item.ActualQuantity}");
+                        table.AddRow($"{item.ID}", $"{ item.CommodityCode}", $"{item.CommodityName}", $"{item.Unit}", $"{item.EstimatedQuantity}", $"{item.ActualQuantity}");
 
+                    }
+
+                    var EmailInput = table;
+                    SendMail(EmailInput);
                 }
-                table.Write();
-                Console.WriteLine("Press Enter to continue with the list of Commodities", Color.Yellow);
-                Console.WriteLine("Type exit to return to Main Menu", Color.AntiqueWhite);
-                String input = Console.ReadLine();
-                String Linput = input.ToLower();
-                if (Linput == "exit")
-                {
-                    MainApplication();
-                }
-
                 else
                 {
-                    skip += CommodityInfo.Count;
-                    CommodityInfo = db.Commodities.Skip(skip).Take(take).ToList();
+                    DisplayCommoditiesbyPage();
                 }
+            }
+            else
+            {
+                DisplayCommoditiesbyPage();
+
+            }
+
+            static void DisplayCommoditiesbyPage()
+            {
+                using var db = new BlobDbContext();
+                
+                
+                int skip = 0;
+                Console.WriteLine("Please enter the number of records you want to display on one page : ", Color.Violet);
+                var take = Int32.Parse(Console.ReadLine());
+                
+                if (take == 0 )
+                {
+                    Console.WriteLine("Page length cannot be 0. Hit enter to return to main menu", Color.Red);
+                    Console.Read();
+                    MainApplication();
+                }
+                Console.WriteLine("Displaying all commodities as per input..", Color.Violet);
+                List<Commodity> CommodityInfo = db.Commodities.Skip(skip).Take(take).ToList();
+                while (CommodityInfo?.Count > 0)
+                {
+                    var table = new ConsoleTable("ID", "CommodityCode", "CommodityName", "Unit", "EstimatedQuantity", "ActualQuantity");
+                    foreach (var item in CommodityInfo)
+                    {
+
+                        table.AddRow($"{item.ID}", $"{ item.CommodityCode}", $"{item.CommodityName}", $"{item.Unit}", $"{item.EstimatedQuantity}", $"{item.ActualQuantity}");
+
+                    }
+                    table.Write();
+                    Console.WriteLine("Press Enter to continue with the list of Commodities", Color.Yellow);
+                    Console.WriteLine("Type exit to return to Main Menu", Color.AntiqueWhite);
+                    String input = Console.ReadLine();
+                    String Linput = input.ToLower();
+                    if (Linput == "exit")
+                    {
+                        MainApplication();
+                    }
+
+                    else
+                    {
+                        skip += CommodityInfo.Count;
+                        CommodityInfo = db.Commodities.Skip(skip).Take(take).ToList();
+                    }
+                }
+
             }
 
         }
@@ -177,27 +223,42 @@ namespace AG_AAC101
 
                 if (com != null)
                 {
-                    Console.Write("Please enter the values that needs to be updated in the below section :\n");
+                    Console.Write("Please enter the values that needs to be updated in the below section.\n (Leaving Blank will not wipe out the values but leaving a white space will. ) :\n");
                     Console.WriteLine("Commodity Code : ");
                     var CCode = Console.ReadLine();
-                    com.CommodityCode = String.IsNullOrWhiteSpace(CCode) ? com.CommodityCode : CCode;
-
+                    com.CommodityCode = String.IsNullOrEmpty(CCode) ? com.CommodityCode : CCode;
+                    if (CCode == " ")
+                    {
+                        com.CommodityCode = " ";
+                    }
                     Console.WriteLine("Commodity Name : ");
                     var CName = Console.ReadLine();
-                    com.CommodityName = String.IsNullOrWhiteSpace(CName) ? com.CommodityName : CName;
-
+                    com.CommodityName = String.IsNullOrEmpty(CName) ? com.CommodityName : CName;
+                    if (CName == " ")
+                    {
+                        com.CommodityName = " ";
+                    }
                     Console.WriteLine("Unit : ");
                     var Unit = Console.ReadLine();
-                    com.Unit = String.IsNullOrWhiteSpace(Unit) ? com.Unit : Unit;
-
+                    com.Unit = String.IsNullOrEmpty(Unit) ? com.Unit : Unit;
+                    if (Unit == " ")
+                    {
+                        com.Unit = " ";
+                    }
                     Console.WriteLine("Estimated Quantity : ");
                     var Equantity = Console.ReadLine();
-                    com.EstimatedQuantity = String.IsNullOrWhiteSpace(Equantity) ? com.EstimatedQuantity : Equantity;
-
+                    com.EstimatedQuantity = String.IsNullOrEmpty(Equantity) ? com.EstimatedQuantity : Equantity;
+                    if (Equantity == " ")
+                    {
+                        com.EstimatedQuantity = " ";
+                    }
                     Console.WriteLine("Actual Quantity : ");
                     var Aquantity = Console.ReadLine();
-                    com.ActualQuantity = String.IsNullOrWhiteSpace(Aquantity) ? com.ActualQuantity : Aquantity;
-
+                    com.ActualQuantity = String.IsNullOrEmpty(Aquantity) ? com.ActualQuantity : Aquantity;
+                    if (Aquantity == " ")
+                    {
+                        com.ActualQuantity = " ";
+                    }
 
                     db.Commodities.Update(com);
                     db.SaveChanges();
@@ -211,6 +272,52 @@ namespace AG_AAC101
 
 
                 }
+            }
+        }
+
+        private static void SendMail(ConsoleTable EmailInput)
+        {
+            try
+            {
+                MailMessage mail = new MailMessage();
+                SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
+
+                Console.WriteLine("Please enter your Email : ");
+                var email = Console.ReadLine();
+
+                var subject = "Commodities Information : " + DateTime.Now;
+
+                mail.From = new MailAddress(email);
+
+                mail.To.Add("agarg@enstoa.com");
+
+                mail.Subject = subject;
+                var Feedback = EmailInput.ToString();
+
+                mail.Body = Feedback;
+                SmtpServer.Port = 587;
+                SmtpServer.Credentials = new System.Net.NetworkCredential("apoorvgarg31@gmail.com", "lrowrxdjguquysyu");
+                SmtpServer.EnableSsl = true;
+                Console.WriteLine("The Commodities information being sent to email. Sit back and Relax ....", Color.AntiqueWhite);
+
+                SmtpServer.Send(mail);
+                Console.WriteLine("Information sent successfully. Hit enter to return to main menu. ", Color.Green);
+                Console.ReadLine();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Email cannot be sent. Please check the below error - \n");
+                if (ex.ToString().Contains("The specified string is not in the form required for an e-mail address."))
+                {
+                    Console.WriteLine("Please check the email address in From Section: ");
+                }
+                else
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+                Console.WriteLine("Hit enter to return to main menu and restart the process : ");
+                Console.ReadLine();
+
             }
         }//Indiviual Function parenthesis
 
@@ -230,11 +337,12 @@ namespace AG_AAC101
                 Console.WriteLine("#              3.  Add Commodity                                   #", Color.Green);
                 Console.WriteLine("#              4.  Update Commodity                                #", Color.Green);
                 Console.WriteLine("#              5.  Delete Commodity                                #", Color.Green);
-                Console.WriteLine("#              6.  Close Program                                   #", Color.Green);
+                Console.WriteLine("#              6.  Clear Console                                   #", Color.Green);
+                Console.WriteLine("#              7.  Close Program                                   #", Color.Green);
                 Console.WriteLine("#                                                                  #", Color.AntiqueWhite);
                 Console.WriteLine("####################################################################", Color.AntiqueWhite);
                 Console.WriteLine("####################################################################", Color.AntiqueWhite);
-                Console.WriteLine("Please choose an option : ",Color.AntiqueWhite);
+                Console.WriteLine("Please choose an option : ", Color.AntiqueWhite);
                 selection = Console.ReadLine();
                 Console.WriteLine();
 
@@ -258,11 +366,15 @@ namespace AG_AAC101
                         DeleteCommodity();
                         break;
                     case "6":
+                        Console.Clear();
+                        break;
+                    case "7":
                         Console.WriteLine("Exiting Program.... See ya soon. ", Color.Red);
                         keepLooping = false;
                         Thread.Sleep(2000); //Delay for 2 seconds  and close window
                         System.Environment.Exit(1);
                         break;
+
                     default:
                         Console.WriteLine("'{0}' is not a valid option, please try again!", selection);
                         break;
@@ -270,5 +382,6 @@ namespace AG_AAC101
                 Console.WriteLine();
             }
         }
+
     }
 }//Namespace parenthesis
