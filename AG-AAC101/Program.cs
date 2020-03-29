@@ -24,7 +24,7 @@ namespace AG_AAC101
             Commodity com = new Commodity();
             do
             {
-                Console.WriteLine("Commodity Code : ");
+                Console.WriteLine("Commodity Code: ");
                 com.CommodityCode = Console.ReadLine();
             }
             while (String.IsNullOrEmpty(com.CommodityCode));
