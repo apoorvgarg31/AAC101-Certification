@@ -210,12 +210,15 @@ namespace AG_AAC101
                     table.AddRow($"{rowcount.ID}", $"{rowcount.CommodityCode}", $"{rowcount.CommodityName}", $"{rowcount.Unit}", $"{rowcount.EstimatedQuantity}", $"{rowcount.ActualQuantity}");
                     table.Write();
                     Console.WriteLine();
+                    Console.WriteLine("Please enter to return to main menu");
+                    Console.Read();
 
                 }
                 else
                 {
                     Console.WriteLine("Not a valid commodity ID, Hit enter to return to main menu", Color.Red);
                     Console.Read();
+                    MainApplication();
 
                 }
             }
