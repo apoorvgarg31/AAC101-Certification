@@ -10,10 +10,7 @@ namespace AG_AAC101.Data.Commodity
         {
         }
 
-        public Commodity(BlobDbContext blobDbContext)
-        {
-            this.blobDbContext = blobDbContext;
-        }
+       
 
         public int ID { get; set; }
         public string CommodityCode { get; set; }

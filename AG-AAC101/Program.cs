@@ -21,7 +21,7 @@ namespace AG_AAC101
         public static void AddCommodity()
         {
             BlobDbContext db = new BlobDbContext();
-            Console.WriteLine("All fields are mandatory and cannot be blank\n");
+            Console.WriteLine("All fields are mandatory and cannot be blank\n" , Color.AliceBlue);
             Commodity com = new Commodity();
             do
             {
@@ -311,7 +311,7 @@ namespace AG_AAC101
                 SmtpServer.Port = 587;
                 SmtpServer.Credentials = new System.Net.NetworkCredential("apoorvgarg31@gmail.com", "lrowrxdjguquysyu");
                 SmtpServer.EnableSsl = true;
-                Console.WriteLine("The Commodities information being sent to email. Sit back and Relax ....", Color.AntiqueWhite);
+                Console.WriteLine("The Commodities information being sent to email. Sit back and Relax ....", Color.Blue);
 
                 SmtpServer.Send(mail);
                 Console.WriteLine("Information sent successfully. Hit enter to return to main menu. ", Color.Green);
